@@ -131,12 +131,143 @@ Inserting expressions for the forces we get:
 \begin_layout Standard
 \begin_inset Formula 
 \[
-m\frac{dv}{dt}=-mg+\frac{1}{2}C_{D}\frac{\rho A}{\rho_{b}V}\left|v\right|v+F_{s}
+m\frac{dv}{dt}=-mg-\frac{1}{2}C_{D}\rho A\left|v\right|v+F_{s}
 \]
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+or in short:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{dv}{dt}=-g-a\left|v\right|v+\frac{F_{s}}{m}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $a=\frac{1}{2m}C_{D}\rho A$
+\end_inset
+
+.
+ The input to the program should then be the mass of the body, the initial
+ velocity, the final time, the timestep and the value of 
+\begin_inset Formula $a$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Part
+b)
+\end_layout
+
+\begin_layout Standard
+Using the Crank-Nicholson scheme we get:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{v\left(t+\Delta t\right)-v\left(t\right)}{\Delta t}=\frac{1}{2}\left.\frac{dv}{dt}\right|_{t}+\frac{1}{2}\left.\frac{dv}{dt}\right|_{t+\Delta t}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{v\left(t+\Delta t\right)-v\left(t\right)}{\Delta t}=\frac{1}{2}\left[-g-a\left|v\left(t\right)\right|v\left(t\right)+\frac{F_{s}\left(v\left(t\right),t\right)}{m}\right]+\frac{1}{2}\left[-g-a\left|v\left(t+\Delta t\right)\right|v\left(t+\Delta t\right)+\frac{F_{s}\left(v\left(t+\Delta t\right),t+\Delta t\right)}{m}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{v\left(t+\Delta t\right)-v\left(t\right)}{\Delta t}=-g+\frac{1}{2}\frac{F_{s}\left(v\left(t\right),t\right)}{m}+\frac{1}{2}\frac{F_{s}\left(v\left(t+\Delta t\right),t+\Delta t\right)}{m}-\frac{1}{2}a\left[\left|v\left(t\right)\right|v\left(t\right)+\left|v\left(t+\Delta t\right)\right|v\left(t+\Delta t\right)\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We now use a geometric average to approximate the term 
+\begin_inset Formula $\left[\left|v\left(t\right)\right|v\left(t\right)+\left|v\left(t+\Delta t\right)\right|v\left(t+\Delta t\right)\right]$
+\end_inset
+
+ as:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left[\left|v\left(t\right)\right|v\left(t\right)+\left|v\left(t+\Delta t\right)\right|v\left(t+\Delta t\right)\right]\approx\left|v\left(t\right)\right|v\left(t+\Delta t\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Inserting this approximation we get:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{v\left(t+\Delta t\right)-v\left(t\right)}{\Delta t}=-g+\frac{1}{2}\frac{F_{s}\left(v\left(t\right),t\right)}{m}+\frac{1}{2}\frac{F_{s}\left(v\left(t+\Delta t\right),t+\Delta t\right)}{m}-a\left|v\left(t\right)\right|v\left(t+\Delta t\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+v\left(t+\Delta t\right)\left(1+\Delta t\frac{1}{2}a\left|v\left(t\right)\right|\right)=-\Delta tg+\Delta t\frac{1}{2}\frac{F_{s}\left(v\left(t\right),t\right)}{m}+\Delta t\frac{1}{2}\frac{F_{s}\left(v\left(t+\Delta t\right),t+\Delta t\right)}{m}+v\left(t\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+v\left(t+\Delta t\right)=\frac{\Delta t\left(-g+\frac{1}{2}\frac{F_{s}\left(t\right)}{m}+\frac{1}{2}\frac{F_{s}\left(t+\Delta t\right)}{m}\right)+v\left(t\right)}{\left(1+\Delta ta\left|v\left(t\right)\right|\right)}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Which is a formula that can easily be implemented in a python program.
+ 
 \end_layout
 
 \begin_layout Part
@@ -150,7 +281,7 @@ We have the equation:
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\frac{v\left(t+\Delta t\right)-v\left(t\right)}{\Delta t}=-g+bv\left(t\right)v\left(t+\Delta t\right)
+\frac{v\left(t+\Delta t\right)-v\left(t\right)}{\Delta t}=-g-a\left|v\left(t\right)\right|v\left(t+\Delta t\right)
 \]
 
 \end_inset
@@ -170,7 +301,26 @@ If we assume that v should be a linear function of t, e.g.
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\frac{At+A\Delta t+B-At-B}{\Delta t}=-g+b\left(At+B\right)\left(At+A\Delta t+B\right)
+\frac{At+A\Delta t+B-At-B}{\Delta t}=-g-a\left|\left(At+B\right)\right|\left(At+A\Delta t+B\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+assuming 
+\begin_inset Formula $At+B<0:$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+A=-g+a\left(t^{2}A^{2}+tA^{2}\Delta t+t2AB+AB\Delta t+B^{2}\right)
 \]
 
 \end_inset
@@ -181,18 +331,7 @@ If we assume that v should be a linear function of t, e.g.
 \begin_layout Standard
 \begin_inset Formula 
 \[
-A=-g+b\left(t^{2}A^{2}+tA^{2}\Delta t+t2AB+AB\Delta t+B^{2}\right)
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-0=\left(A^{2}b\right)t^{2}+\left(A^{2}b\Delta t+2ABb\right)t+\left(-g+ABb\Delta t+B^{2}b\right)
+0=\left(A^{2}a\right)t^{2}+\left(A^{2}a\Delta t+2ABa\right)t+\left(-g+ABa\Delta t+B^{2}a-A\right)
 \]
 
 \end_inset
@@ -205,18 +344,14 @@ For this to hold for all
 \begin_inset Formula $t$
 \end_inset
 
-, the coefficients in front of each term must be separatly zero, and the
- constant factor must equal 
-\begin_inset Formula $B$
-\end_inset
-
-, so we get three equations:
+, the coefficients in front of each term must be separatly zero, so we get
+ three equations:
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \[
-A^{2}b=0
+A^{2}a=0
 \]
 
 \end_inset
@@ -227,7 +362,7 @@ A^{2}b=0
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\left(A^{2}b\Delta t+2ABb\right)=2ABb=0
+\left(A^{2}a\Delta t+2ABa\right)=0
 \]
 
 \end_inset
@@ -238,12 +373,186 @@ A^{2}b=0
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\left(-g+ABb\Delta t+B^{2}b\right)=\left(-g+\frac{A^{2}b}{A}B\Delta t+B^{2}b\right)=\left(-g+B^{2}b\right)=B
+\left(-g+ABa\Delta t+B^{2}a\right)=0
 \]
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+These equations imply that 
+\begin_inset Formula $A$
+\end_inset
+
+ must allways be zero to satisfy the discrete equation.
+ Therefore a general linear function does not satisfy the discrete equation.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Fitting the source term so that a linear function is a solution
+\end_layout
+
+\begin_layout Standard
+The differential equation including the source term is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{v\left(t+\Delta t\right)-v\left(t\right)}{\Delta t}=-g+\frac{1}{2}\frac{F_{s}\left(v\left(t\right),t\right)}{m}+\frac{1}{2}\frac{F_{s}\left(v\left(t+\Delta t\right),t+\Delta t\right)}{m}-a\left|v\left(t\right)\right|v\left(t+\Delta t\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So any form of function for 
+\begin_inset Formula $v_{e}\left(t\right)$
+\end_inset
+
+ is a solution if we require that 
+\begin_inset Formula 
+\[
+\frac{1}{2}F_{s}\left(v\left(t\right),t\right)+\frac{1}{2}F_{s}\left(v\left(t+\Delta t\right),t+\Delta t\right)=m\frac{v\left(t+\Delta t\right)-v\left(t\right)}{\Delta t}+mg+ma\left|v\left(t\right)\right|v\left(t+\Delta t\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For example, if we want the exact solution 
+\begin_inset Formula $v_{e}\left(t\right)=At+B$
+\end_inset
+
+, we get 
+\begin_inset Formula 
+\[
+\frac{1}{2}F_{s}\left(v\left(t\right),t\right)+\frac{1}{2}F_{s}\left(v\left(t+\Delta t\right),t+\Delta t\right)=m\frac{At+A\Delta t+B-At-B}{\Delta t}+mg+ma\left|At+B\right|\left(At+A\Delta t+B\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{1}{2}F_{s}\left(v\left(t\right),t\right)+\frac{1}{2}F_{s}\left(v\left(t+\Delta t\right),t+\Delta t\right)=mA+mg+ma\left|At+B\right|\left(At+A\Delta t+B\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+which is the source term needed to make a linear function a solution of
+ the differential equation.
+ 
+\end_layout
+
+\begin_layout Standard
+constant solution 
+\begin_inset Formula $v_{e}\left(t\right)=B$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{1}{2}F_{s}\left(v\left(t\right),t\right)+\frac{1}{2}F_{s}\left(v\left(t+\Delta t\right),t+\Delta t\right)=m\frac{B-B}{\Delta t}+mg+ma\left|B\right|B
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{1}{2}F_{s}\left(v\left(t\right),t\right)+\frac{1}{2}F_{s}\left(v\left(t+\Delta t\right),t+\Delta t\right)=mg+ma\left|B\right|B
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Paragraph
+Fitting the source term to a general solution:
+\end_layout
+
+\begin_layout Standard
+In the discrete Crank-Nicolson scheme, we have:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+v\left(t+\Delta t\right)=\frac{-\Delta t\left(g+\frac{1}{2}\frac{F_{s}\left(t\right)}{m}+\frac{1}{2}\frac{F_{s}\left(t+\Delta t\right)}{m}\right)+v\left(t\right)}{\left(1+\Delta ta\left|v\left(t\right)\right|\right)}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So any form of function will be a solution to the discrete equations if
+ we require that:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\frac{1}{2}\frac{F_{s}\left(t\right)}{m}+\frac{1}{2}\frac{F_{s}\left(t+\Delta t\right)}{m}=g+\frac{v_{e}\left(t+\Delta t\right)-v_{e}\left(t\right)}{\Delta t}+a\left|v\left(t\right)\right|v\left(t+\Delta t\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+or:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+F_{s}\left(t+\frac{\Delta t}{2}\right)=mg+m\frac{v_{e}\left(t+\Delta t\right)-v_{e}\left(t\right)}{\Delta t}+ma\left|v\left(t\right)\right|v\left(t+\Delta t\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The left hand side of this equation is actually the term that appears in
+ the disrete equation we use for calculating 
+\begin_inset Formula $v\left(t+\Delta t\right)$
+\end_inset
+
+.
+ If we now specify 
+\begin_inset Formula $v_{e}$
+\end_inset
+
+ to be a any function, the above requirement will make sure that it is a
+ solution of the discrete differential equation.
+ 
 \end_layout
 
 \end_body
