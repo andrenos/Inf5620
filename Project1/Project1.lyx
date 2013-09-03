@@ -246,7 +246,7 @@ Inserting this approximation we get:
 \begin_layout Standard
 \begin_inset Formula 
 \[
-v\left(t+\Delta t\right)\left(1+\Delta t\frac{1}{2}a\left|v\left(t\right)\right|\right)=-\Delta tg+\Delta t\frac{1}{2}\frac{F_{s}\left(v\left(t\right),t\right)}{m}+\Delta t\frac{1}{2}\frac{F_{s}\left(v\left(t+\Delta t\right),t+\Delta t\right)}{m}+v\left(t\right)
+v\left(t+\Delta t\right)\left(1+\Delta ta\left|v\left(t\right)\right|\right)=-\Delta tg+\Delta t\frac{1}{2}\frac{F_{s}\left(v\left(t\right),t\right)}{m}+\Delta t\frac{1}{2}\frac{F_{s}\left(v\left(t+\Delta t\right),t+\Delta t\right)}{m}+v\left(t\right)
 \]
 
 \end_inset
@@ -266,8 +266,30 @@ v\left(t+\Delta t\right)=\frac{\Delta t\left(-g+\frac{1}{2}\frac{F_{s}\left(t\ri
 \end_layout
 
 \begin_layout Standard
-Which is a formula that can easily be implemented in a python program.
- 
+or in short:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+v\left(t+\Delta t\right)=\frac{v\left(t\right)+\Delta t\cdot X\left(t+\frac{\Delta t}{2}\right)}{1+\Delta t\cdot Y\left(t+\frac{\Delta t}{2}\right)\left|v\left(t\right)\right|}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula 
+\[
+X\left(t+\frac{\Delta t}{2}\right)=-g+\frac{1}{2m}\left(F_{s}\left(t\right)+F_{s}\left(t+\Delta t\right)\right),\qquad Y\left(t\right)=a
+\]
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Part
@@ -402,7 +424,7 @@ The differential equation including the source term is:
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\frac{v\left(t+\Delta t\right)-v\left(t\right)}{\Delta t}=-g+\frac{1}{2}\frac{F_{s}\left(v\left(t\right),t\right)}{m}+\frac{1}{2}\frac{F_{s}\left(v\left(t+\Delta t\right),t+\Delta t\right)}{m}-a\left|v\left(t\right)\right|v\left(t+\Delta t\right)
+\frac{dv}{dt}=-g-a\left|v\right|v+\frac{F_{s}}{m}
 \]
 
 \end_inset
@@ -411,14 +433,13 @@ The differential equation including the source term is:
 \end_layout
 
 \begin_layout Standard
-So any form of function for 
-\begin_inset Formula $v_{e}\left(t\right)$
-\end_inset
+solving for the source term gives:
+\end_layout
 
- is a solution if we require that 
+\begin_layout Standard
 \begin_inset Formula 
 \[
-\frac{1}{2}F_{s}\left(v\left(t\right),t\right)+\frac{1}{2}F_{s}\left(v\left(t+\Delta t\right),t+\Delta t\right)=m\frac{v\left(t+\Delta t\right)-v\left(t\right)}{\Delta t}+mg+ma\left|v\left(t\right)\right|v\left(t+\Delta t\right)
+F_{s}=m\frac{dv}{dt}+mg+ma\left|v\right|v
 \]
 
 \end_inset
@@ -427,61 +448,17 @@ So any form of function for
 \end_layout
 
 \begin_layout Standard
-For example, if we want the exact solution 
-\begin_inset Formula $v_{e}\left(t\right)=At+B$
+So if we want a linear solution, for example 
+\begin_inset Formula $v_{e}=At+B$
 \end_inset
 
-, we get 
-\begin_inset Formula 
-\[
-\frac{1}{2}F_{s}\left(v\left(t\right),t\right)+\frac{1}{2}F_{s}\left(v\left(t+\Delta t\right),t+\Delta t\right)=m\frac{At+A\Delta t+B-At-B}{\Delta t}+mg+ma\left|At+B\right|\left(At+A\Delta t+B\right)
-\]
-
-\end_inset
-
-
+ we get:
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\frac{1}{2}F_{s}\left(v\left(t\right),t\right)+\frac{1}{2}F_{s}\left(v\left(t+\Delta t\right),t+\Delta t\right)=mA+mg+ma\left|At+B\right|\left(At+A\Delta t+B\right)
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-which is the source term needed to make a linear function a solution of
- the differential equation.
- 
-\end_layout
-
-\begin_layout Standard
-constant solution 
-\begin_inset Formula $v_{e}\left(t\right)=B$
-\end_inset
-
-:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\frac{1}{2}F_{s}\left(v\left(t\right),t\right)+\frac{1}{2}F_{s}\left(v\left(t+\Delta t\right),t+\Delta t\right)=m\frac{B-B}{\Delta t}+mg+ma\left|B\right|B
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula 
-\[
-\frac{1}{2}F_{s}\left(v\left(t\right),t\right)+\frac{1}{2}F_{s}\left(v\left(t+\Delta t\right),t+\Delta t\right)=mg+ma\left|B\right|B
+F_{s}\left(t\right)=mA+mg+ma\left|At+B\right|At+B
 \]
 
 \end_inset
@@ -500,7 +477,7 @@ In the discrete Crank-Nicolson scheme, we have:
 \begin_layout Standard
 \begin_inset Formula 
 \[
-v\left(t+\Delta t\right)=\frac{-\Delta t\left(g+\frac{1}{2}\frac{F_{s}\left(t\right)}{m}+\frac{1}{2}\frac{F_{s}\left(t+\Delta t\right)}{m}\right)+v\left(t\right)}{\left(1+\Delta ta\left|v\left(t\right)\right|\right)}
+\frac{v\left(t+\Delta t\right)-v\left(t\right)}{\Delta t}=-g+\frac{1}{2}\frac{F_{s}\left(v\left(t\right),t\right)}{m}+\frac{1}{2}\frac{F_{s}\left(v\left(t+\Delta t\right),t+\Delta t\right)}{m}-a\left|v\left(t\right)\right|v\left(t+\Delta t\right)
 \]
 
 \end_inset
@@ -525,34 +502,18 @@ So any form of function will be a solution to the discrete equations if
 \end_layout
 
 \begin_layout Standard
-or:
+Inserting a linear solution gives:
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \[
-F_{s}\left(t+\frac{\Delta t}{2}\right)=mg+m\frac{v_{e}\left(t+\Delta t\right)-v_{e}\left(t\right)}{\Delta t}+ma\left|v\left(t\right)\right|v\left(t+\Delta t\right)
+F_{s}\left(t+\frac{\Delta t}{2}\right)=mg+mA+ma\left|At+B\right|\left(At+A\Delta t+B\right)
 \]
 
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-The left hand side of this equation is actually the term that appears in
- the disrete equation we use for calculating 
-\begin_inset Formula $v\left(t+\Delta t\right)$
-\end_inset
-
-.
- If we now specify 
-\begin_inset Formula $v_{e}$
-\end_inset
-
- to be a any function, the above requirement will make sure that it is a
- solution of the discrete differential equation.
- 
 \end_layout
 
 \end_body
