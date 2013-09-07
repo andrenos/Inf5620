@@ -73,21 +73,61 @@
 Inf5620 Project 1
 \end_layout
 
+\begin_layout Author
+Andreas Nygård Osnes
+\end_layout
+
+\begin_layout Abstract
+This project develops a solver for the differential equation governing the
+ velocity of a skydiver with a quadratic air drag.
+ The differential equation is derived, then implemented as a python program.
+ The program is verified using nosetests, and then finally used to simulate
+ a full parachute jump.
+\end_layout
+
 \begin_layout Part
-a)
+Deriving the differential equation
 \end_layout
 
 \begin_layout Standard
-The forces acting on the body are the gravity force and a quadratic drag
+The differential equation is obtained by using Newtons second law:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sum_{i}F_{i}=ma.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\sum F_{i}$
+\end_inset
+
+ are the forces acting on the body, 
+\begin_inset Formula $m$
+\end_inset
+
+ is the mass of the body and 
+\begin_inset Formula $a$
+\end_inset
+
+ is the acceleration.
+ The forces acting on the body are the gravity force and a quadratic drag
  force.
- The source force is also added for testing.
+ A source force is also added for testing.
  We then have:
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\sum_{i}F_{i}=F_{g}+F_{d}+F_{s}
+\sum_{i}F_{i}=F_{g}+F_{d}+F_{s}.
 \]
 
 \end_inset
@@ -109,14 +149,13 @@ where the subscripts indicate the force (
 \end_inset
 
 =source).
- The differential equation for the velocity of the motion is found by using
- that the sum of forces equals mass times acceleration:
+ The differential equation for the velocity of the motion is then:
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \[
-m\frac{dv}{dt}=F_{g}+F_{d}+F_{s}
+m\frac{dv}{dt}=F_{g}+F_{d}+F_{s}.
 \]
 
 \end_inset
@@ -125,13 +164,18 @@ m\frac{dv}{dt}=F_{g}+F_{d}+F_{s}
 \end_layout
 
 \begin_layout Standard
-Inserting expressions for the forces we get:
+Where 
+\begin_inset Formula $v$
+\end_inset
+
+ is the velocity.
+ Inserting expressions for the forces we get:
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \[
-m\frac{dv}{dt}=-mg-\frac{1}{2}C_{D}\rho A\left|v\right|v+F_{s}
+m\frac{dv}{dt}=-mg-\frac{1}{2}C_{D}\rho A\left|v\right|v+F_{s}.
 \]
 
 \end_inset
@@ -140,14 +184,31 @@ m\frac{dv}{dt}=-mg-\frac{1}{2}C_{D}\rho A\left|v\right|v+F_{s}
 \end_layout
 
 \begin_layout Standard
-or in short:
+where 
+\begin_inset Formula $g$
+\end_inset
+
+ is the gravity acceleration, 
+\begin_inset Formula $C_{D}$
+\end_inset
+
+ is the drag coefficient, 
+\begin_inset Formula $\rho$
+\end_inset
+
+ is the mass density of the medium the body is moving in and 
+\begin_inset Formula $A$
+\end_inset
+
+ is the cross-sectional area of the body.
+ In short, this equation can be written:
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
-\[
-\frac{dv}{dt}=-g-a\left|v\right|v+\frac{F_{s}}{m}
-\]
+\begin{equation}
+\frac{dv}{dt}=-g-a\left|v\right|v+\frac{F_{s}}{m}\label{eq:properdiff}
+\end{equation}
 
 \end_inset
 
@@ -161,30 +222,58 @@ where
 
 .
  The input to the program should then be the mass of the body, the initial
- velocity, the final time, the timestep and the value of 
-\begin_inset Formula $a$
+ velocity, the final time, the timestep and the values of the constants
+ 
+\begin_inset Formula $C_{D}$
+\end_inset
+
+, 
+\begin_inset Formula $\rho$
+\end_inset
+
+ and 
+\begin_inset Formula $A$
 \end_inset
 
 .
 \end_layout
 
 \begin_layout Part
-b)
+The discrete differential equation:
 \end_layout
 
 \begin_layout Standard
-Using the Crank-Nicholson scheme we get:
+For the discretization of equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:properdiff"
+
+\end_inset
+
+ we will apply a Crank-Nicolson scheme.
+ This scheme reads:
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
-\[
-\frac{v\left(t+\Delta t\right)-v\left(t\right)}{\Delta t}=\frac{1}{2}\left.\frac{dv}{dt}\right|_{t}+\frac{1}{2}\left.\frac{dv}{dt}\right|_{t+\Delta t}
-\]
+\begin{equation}
+\frac{v\left(t+\Delta t\right)-v\left(t\right)}{\Delta t}=\frac{1}{2}\left.\frac{dv}{dt}\right|_{t}+\frac{1}{2}\left.\frac{dv}{dt}\right|_{t+\Delta t}\label{eq:Crank-Nicolson}
+\end{equation}
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+Inserting equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:properdiff"
+
+\end_inset
+
+ on the right-hand side we get:
 \end_layout
 
 \begin_layout Standard
@@ -200,9 +289,9 @@ Using the Crank-Nicholson scheme we get:
 
 \begin_layout Standard
 \begin_inset Formula 
-\[
-\frac{v\left(t+\Delta t\right)-v\left(t\right)}{\Delta t}=-g+\frac{1}{2}\frac{F_{s}\left(v\left(t\right),t\right)}{m}+\frac{1}{2}\frac{F_{s}\left(v\left(t+\Delta t\right),t+\Delta t\right)}{m}-\frac{1}{2}a\left[\left|v\left(t\right)\right|v\left(t\right)+\left|v\left(t+\Delta t\right)\right|v\left(t+\Delta t\right)\right]
-\]
+\begin{equation}
+\frac{v\left(t+\Delta t\right)-v\left(t\right)}{\Delta t}=-g+\frac{1}{2}\frac{F_{s}\left(v\left(t\right),t\right)}{m}+\frac{1}{2}\frac{F_{s}\left(v\left(t+\Delta t\right),t+\Delta t\right)}{m}-\frac{1}{2}a\left[\left|v\left(t\right)\right|v\left(t\right)+\left|v\left(t+\Delta t\right)\right|v\left(t+\Delta t\right)\right]\label{eq:Crank-Nicolson-specific}
+\end{equation}
 
 \end_inset
 
@@ -219,9 +308,9 @@ We now use a geometric average to approximate the term
 
 \begin_layout Standard
 \begin_inset Formula 
-\[
-\left[\left|v\left(t\right)\right|v\left(t\right)+\left|v\left(t+\Delta t\right)\right|v\left(t+\Delta t\right)\right]\approx\left|v\left(t\right)\right|v\left(t+\Delta t\right)
-\]
+\begin{equation}
+\left[\left|v\left(t\right)\right|v\left(t\right)+\left|v\left(t+\Delta t\right)\right|v\left(t+\Delta t\right)\right]\approx\left|v\left(t\right)\right|v\left(t+\Delta t\right)\label{eq:Geometric-avg}
+\end{equation}
 
 \end_inset
 
@@ -229,7 +318,14 @@ We now use a geometric average to approximate the term
 \end_layout
 
 \begin_layout Standard
-Inserting this approximation we get:
+Inserting this approximation into equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Crank-Nicolson-specific"
+
+\end_inset
+
+ we get:
 \end_layout
 
 \begin_layout Standard
@@ -241,6 +337,10 @@ Inserting this approximation we get:
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+which can be further manipulated to give:
 \end_layout
 
 \begin_layout Standard
@@ -256,9 +356,9 @@ v\left(t+\Delta t\right)\left(1+\Delta ta\left|v\left(t\right)\right|\right)=-\D
 
 \begin_layout Standard
 \begin_inset Formula 
-\[
-v\left(t+\Delta t\right)=\frac{\Delta t\left(-g+\frac{1}{2}\frac{F_{s}\left(t\right)}{m}+\frac{1}{2}\frac{F_{s}\left(t+\Delta t\right)}{m}\right)+v\left(t\right)}{\left(1+\Delta ta\left|v\left(t\right)\right|\right)}
-\]
+\begin{equation}
+v\left(t+\Delta t\right)=\frac{\Delta t\left(-g+\frac{1}{2}\frac{F_{s}\left(t\right)}{m}+\frac{1}{2}\frac{F_{s}\left(t+\Delta t\right)}{m}\right)+v\left(t\right)}{\left(1+\Delta ta\left|v\left(t\right)\right|\right)}\label{eq:Crank-Nicolson-Final}
+\end{equation}
 
 \end_inset
 
@@ -271,9 +371,9 @@ or in short:
 
 \begin_layout Standard
 \begin_inset Formula 
-\[
-v\left(t+\Delta t\right)=\frac{v\left(t\right)+\Delta t\cdot X\left(t+\frac{\Delta t}{2}\right)}{1+\Delta t\cdot Y\left(t+\frac{\Delta t}{2}\right)\left|v\left(t\right)\right|}
-\]
+\begin{equation}
+v\left(t+\Delta t\right)=\frac{v\left(t\right)+\Delta t\cdot X\left(t+\frac{\Delta t}{2}\right)}{1+\Delta t\cdot Y\left(t+\frac{\Delta t}{2}\right)\left|v\left(t\right)\right|}\label{eq:Crank-Nicolson-XY}
+\end{equation}
 
 \end_inset
 
@@ -293,11 +393,28 @@ X\left(t+\frac{\Delta t}{2}\right)=-g+\frac{1}{2m}\left(F_{s}\left(t\right)+F_{s
 \end_layout
 
 \begin_layout Part
-c)
+Showing that a linear equation is not a solution
 \end_layout
 
 \begin_layout Standard
-We have the equation:
+Because of the geometric average used in deriving equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Crank-Nicolson-Final"
+
+\end_inset
+
+ a general linear equation will not be a solution of our discrete scheme.
+ This section will show this fact by inserting a general solution into the
+ scheme.
+ Without the source term, equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Crank-Nicolson-Final"
+
+\end_inset
+
+ is equal to:
 \end_layout
 
 \begin_layout Standard
@@ -332,11 +449,12 @@ If we assume that v should be a linear function of t, e.g.
 \end_layout
 
 \begin_layout Standard
-assuming 
-\begin_inset Formula $At+B<0:$
+We now make an assumption to get rid of the absolute value.
+ If we take 
+\begin_inset Formula $At+B<0$
 \end_inset
 
-
+ we get:
 \end_layout
 
 \begin_layout Standard
@@ -413,12 +531,14 @@ These equations imply that
  
 \end_layout
 
-\begin_layout Paragraph
+\begin_layout Part
 Fitting the source term so that a linear function is a solution
 \end_layout
 
 \begin_layout Standard
-The differential equation including the source term is:
+In general, we want our solver to be able to reproduce a linear function.
+ This is very useful for verifying that the solver works properly.
+ The differential equation including the source term is:
 \end_layout
 
 \begin_layout Standard
@@ -457,17 +577,24 @@ So if we want a linear solution, for example
 
 \begin_layout Standard
 \begin_inset Formula 
-\[
-F_{s}\left(t\right)=mA+mg+ma\left|At+B\right|At+B
-\]
+\begin{equation}
+F_{s}\left(t\right)=mA+mg+ma\left|At+B\right|At+B\label{eq:Source-analytical}
+\end{equation}
 
 \end_inset
 
 
 \end_layout
 
+\begin_layout Standard
+This is the general expression for the source term.
+ In the discrete scheme however, the function must be slightly different
+ as will be shown below.
+ 
+\end_layout
+
 \begin_layout Paragraph
-Fitting the source term to a general solution:
+Fitting the source term to a linear solution in the discrete scheme:
 \end_layout
 
 \begin_layout Standard
@@ -478,6 +605,16 @@ In the discrete Crank-Nicolson scheme, we have:
 \begin_inset Formula 
 \[
 \frac{v\left(t+\Delta t\right)-v\left(t\right)}{\Delta t}=-g+\frac{1}{2}\frac{F_{s}\left(v\left(t\right),t\right)}{m}+\frac{1}{2}\frac{F_{s}\left(v\left(t+\Delta t\right),t+\Delta t\right)}{m}-a\left|v\left(t\right)\right|v\left(t+\Delta t\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
 \]
 
 \end_inset
@@ -510,6 +647,461 @@ Inserting a linear solution gives:
 \[
 F_{s}\left(t+\frac{\Delta t}{2}\right)=mg+mA+ma\left|At+B\right|\left(At+A\Delta t+B\right)
 \]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+now, to get the function 
+\begin_inset Formula $F_{s}\left(t\right)$
+\end_inset
+
+ we shift the equation 
+\begin_inset Formula $\frac{\Delta t}{2}$
+\end_inset
+
+ back in time and get:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+F_{s}\left(t\right)=mg+mA+ma\left|A\left(t-\Delta t/2\right)\right|\left(At+A\Delta t/2+B\right)\label{eq:Linear-source-term}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+which is as can easily be seen, is not the same equation as obtained when
+ fitting the source term from the differential equation.
+ Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Linear-source-term"
+
+\end_inset
+
+ is the expression that will be implemented to perform a nosetest for the
+ linear solution.
+ 
+\end_layout
+
+\begin_layout Paragraph
+Nosetest for the linear solution
+\end_layout
+
+\begin_layout Standard
+When we apply the Crank-Nicolson scheme to a linear function, we expect
+ it to be exact.
+ As shown above, a linear solution is not in general a solution to the different
+ial equation with the geometric average approximation.
+ When inserting the source term derived above (Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Linear-source-term"
+
+\end_inset
+
+), a general linear solution (given by 
+\begin_inset Formula $A$
+\end_inset
+
+ and 
+\begin_inset Formula $B$
+\end_inset
+
+) 
+\series bold
+will 
+\series default
+be a solution, and our solver should be able to calculate it to machine
+ precision.
+ This can be tested in a nosetest.
+\end_layout
+
+\begin_layout Part
+Testing the convergence rate of the discrete scheme
+\end_layout
+
+\begin_layout Standard
+Another useful test of our program will be to examine the convergence rate
+ of our numerical scheme as 
+\begin_inset Formula $\Delta t$
+\end_inset
+
+ approaches zero.
+ The error in the Crank-Nicolson scheme goes as 
+\begin_inset Formula $\mathscr{{O}}\left(\Delta t^{2}\right)$
+\end_inset
+
+ and the error in the geometric average also goes as 
+\begin_inset Formula $\mathscr{{O}}\left(\Delta t^{2}\right)$
+\end_inset
+
+.
+ The total error in our numerical scheme should therefore also go as 
+\begin_inset Formula $\mathscr{{O}}\left(\Delta t^{2}\right)$
+\end_inset
+
+.
+ This can be tested by assuming that the error in the numerical solution
+ goes as 
+\begin_inset Formula 
+\[
+E=C\Delta t^{r}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Where 
+\begin_inset Formula $C$
+\end_inset
+
+ is a constant, and 
+\begin_inset Formula $r$
+\end_inset
+
+ is a number reflecting how fast the numerical approximation converges to
+ the exact solution.
+ If we now fit a source term to a function which will not be represented
+ exactly by the Crank-Nicolson scheme, as in the general form in Equation
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Source-analytical"
+
+\end_inset
+
+, we can compute the error in our numerical approximation.
+ A representative number for the error in the numerical approximation is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E=\sqrt{\Delta t\sum_{i}^{N}\left(v_{e}\left(t_{i}\right)-v\left(t_{i}\right)\right)^{2}}\label{eq:ErrorNorm}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This is the expression that will be used for the error in the numerical
+ approximation.
+ Using equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ErrorNorm"
+
+\end_inset
+
+, we can compute 
+\begin_inset Formula $r$
+\end_inset
+
+ from:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+r_{i}=\frac{\ln\left(E_{i-1}/E_{i}\right)}{\ln\left(\Delta t_{i-1}/\Delta t_{i}\right)}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where the values for 
+\begin_inset Formula $E_{i}$
+\end_inset
+
+ are taken from simulations with corresponding 
+\begin_inset Formula $\Delta t_{i}$
+\end_inset
+
+.
+ If our solver works correctly, 
+\begin_inset Formula $r$
+\end_inset
+
+ should now be close to 
+\begin_inset Formula $2$
+\end_inset
+
+.
+ This can be tested in a nosetest.
+\end_layout
+
+\begin_layout Part
+Plots
+\end_layout
+
+\begin_layout Standard
+The visualization of the forces as functions of time is implemented as two
+ separate functions.
+ One for visualizing the forces without opening the parachute, and one with
+ opening of the parachute.
+ These functions are compute the forces and then show and save the plots.
+ There are also separate functions for plotting the velocity of the skydiver
+ and the position.
+ The values for the different variables used for obtaining these plots are:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+C_{D}=1.5,\qquad A=0.65,\qquad\rho=1.0,\qquad m=100.0,\qquad v_{0}=0,\qquad t_{p}=60
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and after opening the parachute at time 
+\begin_inset Formula $t_{p}=60s$
+\end_inset
+
+, 
+\begin_inset Formula $C_{D}$
+\end_inset
+
+ and 
+\begin_inset Formula $A$
+\end_inset
+
+ were changed to 
+\begin_inset Formula 
+\[
+C_{D}=1.8,\qquad A=44.0
+\]
+
+\end_inset
+
+The plots are all shown in figure 1-3.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+centerline{
+\end_layout
+
+\end_inset
+
+
+
+\begin_inset Graphics
+	filename Skydiver_velocity.png
+	scale 40
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename Parachute_velocity.png
+	scale 40
+
+\end_inset
+
+
+\lang norsk
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Skydiver velocity without opening the parachute (left) and with opening
+ the parachute at 
+\begin_inset Formula $t_{p}=60s$
+\end_inset
+
+ (right)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+centerline{
+\end_layout
+
+\end_inset
+
+
+
+\begin_inset Graphics
+	filename Forces.png
+	scale 40
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename Parachute_forces.png
+	scale 40
+
+\end_inset
+
+
+\lang norsk
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Forces without opening the parachute (left) and with opening the parachute
+ at 
+\begin_inset Formula $t_{p}=60s$
+\end_inset
+
+ (right)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+centerline{
+\end_layout
+
+\end_inset
+
+
+
+\begin_inset Graphics
+	filename Parachute_position.png
+	scale 60
+
+\end_inset
+
+
+\lang norsk
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Position of the skydiver as a function of time
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
 
 \end_inset
 
