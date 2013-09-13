@@ -1,0 +1,10 @@
+ * Extensive tex report not necessary here, but good anyway.
+ * Nice, clean implementation. Some more commenting necessary, docstring == good.
+ * ArgParser() good.
+ * Good implementation of tests, everything is running fine too. Good.
+ * Obviously, from a programers point, there are a lot of things here that could have been done
+ a lot easier. However that was not the main point of the exercise. You have clearly grabbed all the 
+ important aspects.
+ * Programs as lengthy as this would look a lot better when implemented with classes, functions where ok too.
+
+Approved.
