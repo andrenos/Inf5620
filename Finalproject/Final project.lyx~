@@ -358,7 +358,7 @@ reference "eq:VariationalSpatial"
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
-\left(u,v\right)+\left(\alpha\left(u\_\right)\nabla u,\nabla v\right)=\left(u^{n-1},v\right)+\Delta t\left(\mathbf{f}\left(\mathbf{x},t\right),v\right)\label{eq:PICARD}
+\left(u,v\right)+\frac{\Delta t}{\rho}\left(\alpha\left(u\_\right)\nabla u,\nabla v\right)=\left(u^{n-1},v\right)+\Delta t\left(\mathbf{f}\left(\mathbf{x},t\right),v\right)\label{eq:PICARD}
 \end{equation}
 
 \end_inset
@@ -384,7 +384,7 @@ reference "eq:PICARD"
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\left(u^{n},v\right)+\left(\alpha\left(u^{n-1}\right)\nabla u^{n},\nabla v\right)=\left(u^{n-1},v\right)+\Delta t\left(\mathbf{f}\left(\mathbf{x},t\right),v\right)
+\left(u^{n},v\right)+\frac{\Delta t}{\rho}\left(\alpha\left(u^{n-1}\right)\nabla u^{n},\nabla v\right)=\left(u^{n-1},v\right)+\Delta t\left(\mathbf{f}\left(\mathbf{x},t\right),v\right)
 \]
 
 \end_inset
@@ -395,6 +395,43 @@ reference "eq:PICARD"
 \begin_layout Standard
 This is easily implemented in a python program by using the FEniCS software.
  
+\end_layout
+
+\begin_layout Part
+g)
+\end_layout
+
+\begin_layout Standard
+The group finite element method consists of approximating a non-linear term
+ 
+\begin_inset Formula $f\left(u\right)$
+\end_inset
+
+ by:
+\begin_inset Formula 
+\[
+f\left(u\right)\approx\sum_{j=0}^{N_{n}}f\left(u_{j}\right)\phi_{j}\left(x\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $u_{j}$
+\end_inset
+
+ is the value of 
+\begin_inset Formula $u$
+\end_inset
+
+ at node 
+\begin_inset Formula $x_{j}$
+\end_inset
+
+
 \end_layout
 
 \end_body

@@ -40,7 +40,7 @@ def main(nx, dt):
 		u_e = interpolate(u0, V)	
 		e = u_e.vector().array() - u.vector().array()
 		E.append(numpy.sqrt(numpy.sum(e**2)/u.vector().array().size))
-		#plot(u_1)
+		#plot(u)
 		u_1.assign(u) # Copy solution to u_1 to prepare for next time-step
 		t += dt
 	return array(E).max()

@@ -1,7 +1,7 @@
 from dolfin import *
 import numpy
 import nose.tools as nt
-
+from scitools.std import array
 
 def main(nx, dt):
 	# Parameters
@@ -32,18 +32,18 @@ def main(nx, dt):
 	
 	# Initial condition already stored in u_1, so start iteration at t=dt
 	t = dt
-	E = 0;
+	E = [];
 	while t<=T:
 		b = assemble(L, tensor=b)
 		solve(A, u.vector(), b)
 		u0.t = t
 		u_e = interpolate(u0, V)	
 		e = u_e.vector().array() - u.vector().array()
-		E = numpy.sqrt(numpy.sum(e**2)/u.vector().array().size)
+		E.append(numpy.sqrt(numpy.sum(e**2)/u.vector().array().size))
 		#plot(u_1)
 		u_1.assign(u) # Copy solution to u_1 to prepare for next time-step
 		t += dt
-	return E
+	return array(E).max()
 	
 	
 def test_conv():
@@ -57,7 +57,7 @@ def test_conv():
 		E.append(main(nx, dt))
 		
 	print numpy.array(E)/numpy.array(h)
-	nt.assert_almost_equal(E[-1]-E[-2], 0, places=4)
+	nt.assert_almost_equal(E[-1]-E[-2], 0, places=2)
 	for i in range(len(E)-1):
 		R = ln(E[i]/E[i-1])/ln(h[i]/h[i-1])
 		r.append(R)

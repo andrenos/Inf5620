@@ -397,5 +397,43 @@ This is easily implemented in a python program by using the FEniCS software.
  
 \end_layout
 
+\begin_layout Part
+g)
+\end_layout
+
+\begin_layout Standard
+The group finite element method consists of approximating a non-linear term
+ 
+\begin_inset Formula $f\left(u\right)$
+\end_inset
+
+ by:
+\begin_inset Formula 
+\[
+f\left(u\right)\approx\sum_{j=0}^{N_{n}}f\left(u_{j}\right)\phi_{j}\left(x\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $u_{j}$
+\end_inset
+
+ is the value of 
+\begin_inset Formula $u$
+\end_inset
+
+ at node 
+\begin_inset Formula $x_{j}$
+\end_inset
+
+.
+ This is unfinished...
+\end_layout
+
 \end_body
 \end_document
