@@ -1,0 +1,401 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage{braket}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language norsk
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement H
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1.5cm
+\topmargin 1.5cm
+\rightmargin 1.5cm
+\bottommargin 1.5cm
+\secnumdepth -1
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\listings_params "breaklines=true,frame=single,language={C++}"
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+INF5620 Final Project
+\end_layout
+
+\begin_layout Author
+Andreas Nygård Osnes
+\end_layout
+
+\begin_layout Standard
+This project consider the non-linear diffusion model:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\rho u_{t}=\nabla\cdot\left(\alpha\left(u\right)\nabla u\right)+\mathbf{f}\left(\mathbf{x},\ t\right)\label{eq:non-lin-diff}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+with initial condition
+\begin_inset Formula 
+\[
+u\left(\mathbf{x},0\right)=I\left(x\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and boundary condition
+\begin_inset Formula 
+\[
+\frac{\partial u}{\partial n}=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\rho$
+\end_inset
+
+ is a constant and 
+\begin_inset Formula $\alpha\left(u\right)$
+\end_inset
+
+ is some known known function of 
+\begin_inset Formula $u$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Part
+a)
+\end_layout
+
+\begin_layout Standard
+We now introduce a Backward Euler discretization in time.
+ This gives us:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\frac{u^{n}-u^{n-1}}{\Delta t}=\frac{1}{\rho}\nabla\cdot\left(\alpha\left(u^{n}\right)\nabla u^{n}\right)+\frac{1}{\rho}\mathbf{f}\left(\mathbf{x},t\right)\label{eq:BEdisc}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+u^{n}-\frac{\Delta t}{\rho}\nabla\cdot\left(\alpha\left(u^{n}\right)\nabla u^{n}\right)=u^{n-1}+\Delta t\mathbf{f}\left(\mathbf{x},t\right)\label{eq:BEformulation}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The variational formulation of the initial condition is found by recognizing
+ that the residual is 
+\begin_inset Formula $R=u\left(\mathbf{x},0\right)-I\left(x\right)$
+\end_inset
+
+.
+ The error should be orthogonal to each function 
+\begin_inset Formula $v$
+\end_inset
+
+, which gives:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left(u-I,v\right)=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\underline{\underline{\left(u,v\right)=\left(I,v\right)}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The variariational formulation for the spatial problem is found by considering
+ equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:BEformulation"
+
+\end_inset
+
+.
+ We define the residual 
+\begin_inset Formula $R=LHS-RHS$
+\end_inset
+
+ and use the Galerkin method which gives:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left(R,v\right)=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Inserting the expression for 
+\begin_inset Formula $R$
+\end_inset
+
+ we get:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(u^{n},v\right)-\frac{\Delta t}{\rho}\left(\nabla\cdot\left[\alpha\left(u^{n}\right)\nabla u^{n}\right],v\right)=\left(u^{n-1},v\right)+\Delta t\left(\mathbf{f}\left(\mathbf{x},t\right),v\right)\label{eq:tmpVariational}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+on the second term on the left-hand side we apply partial integration:
+\begin_inset Formula 
+\[
+\left(\nabla\cdot\alpha\left(u^{n}\right)\nabla u^{n},v\right)=\int_{\Omega}\left[\nabla\cdot\alpha\left(u^{n}\right)\nabla u^{n}\right]vd\Omega=\left[\alpha\left(u^{n}\right)\nabla u^{n}v\right]-\int_{\Omega}\alpha\left(u^{n}\right)\nabla u^{n}\nabla vd\Omega=-\int_{\Omega}\alpha\left(u^{n}\right)\nabla u^{n}\nabla vd\Omega
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where we have used that the term 
+\begin_inset Formula $\alpha\left(u^{n}\right)\nabla u^{n}v$
+\end_inset
+
+ evaluated at the boundaries is zero, by the boundary condition.
+ Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:tmpVariational"
+
+\end_inset
+
+ then becomes:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\underline{\underline{\left(u^{n},v\right)+\left(\alpha\left(u^{n}\right)\nabla u^{n},\nabla v\right)=\left(u^{n-1},v\right)+\Delta t\left(\mathbf{f}\left(\mathbf{x},t\right),v\right)}}\label{eq:VariationalSpatial}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:VariationalSpatial"
+
+\end_inset
+
+ is the variational formulation of the spatial problem.
+ 
+\end_layout
+
+\begin_layout Part
+b)
+\end_layout
+
+\begin_layout Standard
+To formulate a Picard iteration at the PDE level we consider again equation
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:BEdisc"
+
+\end_inset
+
+.
+ We now replace the argument to 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ with 
+\begin_inset Formula $u\_$
+\end_inset
+
+ ,which symbolizes the previous iteration value of 
+\begin_inset Formula $u$
+\end_inset
+
+, to linearize this term and rename 
+\begin_inset Formula $u^{n}\rightarrow u$
+\end_inset
+
+.
+ We then get:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+u=u^{n-1}+\frac{\Delta t}{\rho}\nabla\cdot\left(\alpha\left(u\_\right)\nabla u\right)+\frac{\Delta t}{\rho}\mathbf{f}\left(\mathbf{x},t\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where the iteration is started by setting 
+\begin_inset Formula $u\_=u^{n-1}$
+\end_inset
+
+.
+ The analogue to equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:VariationalSpatial"
+
+\end_inset
+
+ in the Picard iteration then becomes:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\left(u,v\right)+\left(\alpha\left(u\_\right)\nabla u,\nabla v\right)=\left(u^{n-1},v\right)+\Delta t\left(\mathbf{f}\left(\mathbf{x},t\right),v\right)\label{eq:PICARD}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+c)
+\end_layout
+
+\begin_layout Standard
+If we restrict equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:PICARD"
+
+\end_inset
+
+ to only a single iteration, it simply becomes:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\left(u^{n},v\right)+\left(\alpha\left(u^{n-1}\right)\nabla u^{n},\nabla v\right)=\left(u^{n-1},v\right)+\Delta t\left(\mathbf{f}\left(\mathbf{x},t\right),v\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This is easily implemented in a python program by using the FEniCS software.
+ 
+\end_layout
+
+\end_body
+\end_document

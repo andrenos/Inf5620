@@ -1,0 +1,50 @@
+from dolfin import *
+import numpy
+import nose.tools as nt
+import time
+
+
+def main(nx, dt):
+	# Parameters
+	T = 0.5
+	rho = 1.0
+	beta = 0.6
+	sigma = 0.1
+	
+	# Create mesh and define function space
+	mesh = UnitSquareMesh(nx, nx)
+	V = FunctionSpace(mesh, 'Lagrange', 1)
+	
+	# Define boundary conditions
+	
+	# Initial condition
+	I = Expression('exp(-1/(2*sigma*sigma)*(x[0]*x[0] + x[1]*x[1]))', sigma=sigma)
+	u_1 = interpolate(I, V)
+	
+	
+	#Define variational problem
+	u = TrialFunction(V)
+	v = TestFunction(V)
+	
+	f = Expression('0')
+	alpha = (1 + beta*u_1*u_1)
+	a = u*v*dx + (dt/rho)*alpha*inner(nabla_grad(u), nabla_grad(v))*dx		
+	L = u_1*v*dx + (dt/rho)*f*v*dx 
+	
+	u = Function(V)
+	
+	# Initial condition already stored in u_1, so start iteration at t=dt
+	t = dt
+	while t<=T:
+		
+		solve(a==L, u)
+		plot(u)
+		u_1.assign(u) # Copy solution to u_1 to prepare for next time-step
+		t += dt
+		print t
+	
+	
+	
+if __name__ == '__main__':
+	set_log_level(50)
+	main(20, 0.01)
